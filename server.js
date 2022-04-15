@@ -50,7 +50,7 @@ app.use('/upload',  express.static(path.join(__dirname, '/public/upload')))
 })*/
 
 // Connect to the database through Mongoose
-mongoose.connect('mongodb://localhost/server_db2', {useNewUrlParser: true})
+mongoose.connect('mongodb://10.0.0.53:8002/rb_server_db', {useNewUrlParser: true})
   .then(() => {
     console.log('Database connect succeefully!!!')
     // Start the server only when the database is connected
