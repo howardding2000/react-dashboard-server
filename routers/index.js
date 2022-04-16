@@ -213,7 +213,7 @@ router.get("/manage/category/info", (req, res) => {
     });
 });
 
-// 添加产品
+// Add product
 router.post("/manage/product/add", (req, res) => {
   const { product } = req.body;
   // console.log(product);
@@ -222,12 +222,12 @@ router.post("/manage/product/add", (req, res) => {
       res.send({ status: 0, data: product });
     })
     .catch((error) => {
-      console.error("Add item exception", error);
-      res.send({ status: 1, msg: "Add item exception, please try again" });
+      console.error("Add product exception", error);
+      res.send({ status: 1, msg: "Add product exception, please try again" });
     });
 });
 
-// 获取产品分页列表
+// Get products list
 router.get("/manage/product/list", (req, res) => {
   const { pageNum, pageSize } = req.query;
   ProductModel.find({})
@@ -235,12 +235,15 @@ router.get("/manage/product/list", (req, res) => {
       res.send({ status: 0, data: pageFilter(products, pageNum, pageSize) });
     })
     .catch((error) => {
-      console.error("获取商品列表异常", error);
-      res.send({ status: 1, msg: "获取商品列表异常, 请重新尝试" });
+      console.error("Get products list exception", error);
+      res.send({
+        status: 1,
+        msg: "Get products list exception, please try again.",
+      });
     });
 });
 
-// 搜索产品列表
+// Search product list
 router.get("/manage/product/search", (req, res) => {
   const { pageNum, pageSize, productName, productDesc } = req.query;
   // console.log(pageNum, pageSize, productName, productDesc);
@@ -255,12 +258,15 @@ router.get("/manage/product/search", (req, res) => {
       res.send({ status: 0, data: pageFilter(products, pageNum, pageSize) });
     })
     .catch((error) => {
-      console.error("搜索商品列表异常", error);
-      res.send({ status: 1, msg: "搜索商品列表异常, 请重新尝试" });
+      console.error("Search product list exception", error);
+      res.send({
+        status: 1,
+        msg: "Search product list exception, please try again.",
+      });
     });
 });
 
-// 更新产品
+// Update product
 router.post("/manage/product/update", (req, res) => {
   const { product } = req.body;
   // console.log(product);
@@ -271,11 +277,14 @@ router.post("/manage/product/update", (req, res) => {
     })
     .catch((error) => {
       console.error("Update product exception", error);
-      res.send({ status: 1, msg: "Error updating product, please try again." });
+      res.send({
+        status: 1,
+        msg: "Update product exception, please try again.",
+      });
     });
 });
 
-// 删除产品
+// Delete product
 router.post("/manage/product/delete", (req, res) => {
   const { productId } = req.body;
   // console.log(product);
@@ -296,13 +305,13 @@ router.post("/manage/product/delete", (req, res) => {
         console.error("Delete product exception", error);
         res.send({
           status: 1,
-          msg: "Error deleting product. Please try again.",
+          msg: "Delete product exception, please try again.",
         });
       });
   }
 });
 
-// 更新产品状态(上架/下架)
+// Update product status (1: On Sale, 2: Sold Out)
 router.post("/manage/product/updateStatus", (req, res) => {
   const { productId, status } = req.body;
   ProductModel.findOneAndUpdate({ _id: productId }, { status })
@@ -310,12 +319,15 @@ router.post("/manage/product/updateStatus", (req, res) => {
       res.send({ status: 0 });
     })
     .catch((error) => {
-      console.error("更新产品状态异常", error);
-      res.send({ status: 1, msg: "更新产品状态异常, 请重新尝试" });
+      console.error("Update product status exception", error);
+      res.send({
+        status: 1,
+        msg: "Update product status exception, please try again.",
+      });
     });
 });
 
-// 添加角色
+// Add role
 router.post("/manage/role/add", (req, res) => {
   const { roleName } = req.body;
   RoleModel.create({ name: roleName })
@@ -323,43 +335,82 @@ router.post("/manage/role/add", (req, res) => {
       res.send({ status: 0, data: role });
     })
     .catch((error) => {
-      console.error("添加角色异常", error);
-      res.send({ status: 1, msg: "添加角色异常, 请重新尝试" });
+      console.error("Add role exception", error);
+      res.send({ status: 1, msg: "Add role exception, please try again." });
     });
 });
 
-// 获取角色列表
+// Get role list
 router.get("/manage/role/list", (req, res) => {
   RoleModel.find()
     .then((roles) => {
       res.send({ status: 0, data: roles });
     })
     .catch((error) => {
-      console.error("获取角色列表异常", error);
-      res.send({ status: 1, msg: "获取角色列表异常, 请重新尝试" });
+      console.error("Get role list exception", error);
+      res.send({
+        status: 1,
+        msg: "Get role list exception, please try again.",
+      });
     });
 });
 
-// 更新角色(设置权限)
+// Get users of role
+router.get("/manage/role/users", (req, res) => {
+  const roleId = req.query.roleId;
+  UserModel.findOne({ role_id: roleId })
+    .then((user) => {
+      res.send({ status: 0, data: user });
+    })
+    .catch((error) => {
+      console.error("Get user exception", error);
+      res.send({ status: 1, msg: "Get user exception, please try again." });
+    });
+});
+
+// Update role (set permissions)
 router.post("/manage/role/update", (req, res) => {
-  const {role} = req.body;
-  console.log(role)
+  const { role } = req.body;
+  console.log(role);
   role.auth_time = Date.now();
   RoleModel.findOneAndUpdate({ _id: role._id }, role)
     .then((oldRole) => {
       // console.log('---', oldRole._doc)
-      console.log('---', oldRole)
+      console.log("---", oldRole);
       res.send({ status: 0, data: { ...oldRole, ...role } });
     })
     .catch((error) => {
-      console.error("更新角色异常", error);
-      res.send({ status: 1, msg: "更新角色异常, 请重新尝试" });
+      console.error("Update role exception", error);
+      res.send({ status: 1, msg: "Update role exception, please try again." });
     });
 });
 
-/*
-得到指定数组的分页信息对象
+// Delete role
+router.post("/manage/role/delete", (req, res) => {
+  const { roleId } = req.body;
+
+  /**
+   * Before detele the role, check if these are uers under it.
+   */
+  UserModel.findOne({ role_id: roleId })
+    .then((user) => {
+      if (!user) {
+        RoleModel.deleteOne({ _id: roleId }).then((acknowledged) => {
+          console.log(roleId, acknowledged);
+          res.send({ status: 0, acknowledged });
+        });
+      }
+    })
+    .catch((error) => {
+      console.error("Delete role exception", error);
+      res.send({ status: 1, msg: "Delete role exception, please try again." });
+    });
+});
+
+/**
+ * Get the paging information of the specified array
  */
+
 function pageFilter(arr, pageNum, pageSize) {
   pageNum = pageNum * 1;
   pageSize = pageSize * 1;
