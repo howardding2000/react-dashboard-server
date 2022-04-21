@@ -64,7 +64,7 @@ router.post("/login", (req, res) => {
 
 // Add user
 router.post("/manage/user/add", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password} = req.body;
   // Processing: Determine whether the user already exists, if so, return an error message, if not, save
   UserModel.findOne({ username })
     .then((user) => {
@@ -74,6 +74,7 @@ router.post("/manage/user/add", (req, res) => {
       } else {
         return UserModel.create({
           ...req.body,
+          create_time: Date.now(),
           password: md5(password || "2233"),
         });
       }
