@@ -64,17 +64,17 @@ router.post("/login", (req, res) => {
 
 // Add user
 router.post("/manage/user/add", (req, res) => {
-  const { username, password} = req.body;
+  const { user } = req.body;
+  const { username, password } = user;
   // Processing: Determine whether the user already exists, if so, return an error message, if not, save
   UserModel.findOne({ username })
-    .then((user) => {
-      if (user) {
+    .then((_user) => {
+      if (_user) {
         res.send({ status: 1, msg: "This user already exists." });
         return new Promise(() => {});
       } else {
         return UserModel.create({
-          ...req.body,
-          create_time: Date.now(),
+          ...user,
           password: md5(password || "2233"),
         });
       }
@@ -91,7 +91,7 @@ router.post("/manage/user/add", (req, res) => {
 
 // update user
 router.post("/manage/user/update", (req, res) => {
-  const user = req.body;
+  const { user } = req.body;
   UserModel.findOneAndUpdate({ _id: user._id }, user)
     .then((oldUser) => {
       const data = Object.assign(oldUser, user);
@@ -373,7 +373,10 @@ router.get("/manage/role/users", (req, res) => {
 router.post("/manage/role/update", (req, res) => {
   const { role } = req.body;
   console.log(role);
-  role.auth_time = Date.now();
+  if (!role.auth_time) {
+    console.log(role.auth_time);
+    role.auth_time = Date.now();
+  }
   RoleModel.findOneAndUpdate({ _id: role._id }, role)
     .then((oldRole) => {
       // console.log('---', oldRole._doc)
