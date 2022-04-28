@@ -27,7 +27,7 @@ app.use(express.json())
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 const indexRouter = require('./routers')
-app.use('/', indexRouter)  //
+app.use('/api', indexRouter)  //
 
 const fs = require('fs')
 
